@@ -4,8 +4,10 @@ import CityItem from './CityItem'
 import styles from './CityList.module.css'
 import Spinner from './Spinner'
 import Message from './Message'
+import { useCities } from '../Contexts/citiesContext'
 
-function CityList({cities,isLoading})  {
+function CityList()  {
+    const {cities,isLoading} = useCities(); 
     if (isLoading){
         <Spinner/>
     }

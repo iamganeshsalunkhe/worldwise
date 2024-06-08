@@ -5,8 +5,10 @@ import CountryItem from './CountryItem'
 import styles from './CountryList.module.css'
 import Spinner from './Spinner'
 import Message from './Message'
+import { useCities } from '../Contexts/citiesContext'
 
-function CountryList({cities,isLoading})  {
+function CountryList()  {
+    const {cities, isLoading}= useCities()
     if (isLoading){
         <Spinner/>
     }
