@@ -1,29 +1,33 @@
-
-
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { MapContainer, TileLayer, Popup, Marker, useMap, useMapEvents } from 'react-leaflet';
-
-import styles from './Map.module.css'
+import { useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { useCities } from '../Contexts/citiesContext';
+import { MapContainer, TileLayer, Popup, Marker, useMap, useMapEvents } from 'react-leaflet';
+import styles from './Map.module.css'
+import {useGeolocation} from '../hooks/useGeolocation';
+import Button from './Button'
+import useUrlPosition from '../hooks/useUrlPosition';
 
 function Map() {
-    const [mapPosition,setMapPoistion] = useState([17.050177,74.270271]) 
-    
+    const {isLoading:isLoadingPosition, position:geolocationPosition,getPosition} = useGeolocation()
+    const [mapPosition,setMapPoistion] = useState([19.0760,72.8777]) 
     const {cities} = useCities()
+    const [maplat,maplng] = useUrlPosition()
+    
+    useEffect(function(){
+        if (maplat & maplng)
+        setMapPoistion([maplat,maplng]);
+    },[maplat,maplng])
 
-    const [serachParams]=useSearchParams();
-    const mapLat = serachParams.get('lat')
-    const mapLng = serachParams.get('lng')
 
     useEffect(function(){
-        if (mapLat && mapLng)
-        setMapPoistion([mapLat,mapLng]);
-    },[mapLat,mapLng])
-
+        if (geolocationPosition) setMapPoistion([geolocationPosition.lat, geolocationPosition.lng])
+    },[geolocationPosition])
     return (
         <div className={styles.mapContainer }>
-    <MapContainer center={mapPosition} zoom={8} scrollWheelZoom={true} className={styles.mapContainer} >
+        <Button type='position' onClick={getPosition} >
+            {isLoadingPosition ? "Loading...":"Use Your Position"}
+        </Button>
+        <MapContainer center={mapPosition} zoom={8} scrollWheelZoom={true} className={styles.mapContainer} >
         <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -33,7 +37,6 @@ function Map() {
                 <Popup>
                     <span>{city.emoji}</span>
                     <span>{city.cityName}</span>
-
                 </Popup>
             </Marker>)) }
             <ChangeCenter position={mapPosition}/>

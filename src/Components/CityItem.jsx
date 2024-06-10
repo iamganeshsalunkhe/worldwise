@@ -27,8 +27,6 @@ function CityItem({city}) {
             <button className={styles.deleteBtn}>&times;</button>
           </Link>          
         </li>
-        
-        
       </>
         
     )
